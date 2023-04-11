@@ -45,15 +45,16 @@ const searchMovie = async (req: Request, res: Response): Promise<Response> => {
 };
 
 const updateMovie = async (req: Request, res: Response): Promise<Response> => {
-  const movieData: Partial<IMovie> = req.body;
+  const movieData: Partial<MovieCreate> = req.body;
   const id: number = parseInt(req.params.id);
 
   const queryString: string = format(
     `
       UPDATE
           movies
-      SET(%I) = ROW(%L)
-        id = $1
+          SET(%I) = ROW(%L)
+      WHERE
+          id = $1
         RETURNING *;
   `,
     Object.keys(movieData),

@@ -1,11 +1,11 @@
 import { Client } from "pg";
 
 const client = new Client({
-  user: "Cavorgia",
+  user: "CAVORGIA",
   host: "localhost",
   port: 5432,
-  password: "1234",
-  database: "sp2_m4",
+  password: "Loki3210",
+  database: "CAVORGIA",
 });
 
 const startDatabase = async (): Promise<void> => {

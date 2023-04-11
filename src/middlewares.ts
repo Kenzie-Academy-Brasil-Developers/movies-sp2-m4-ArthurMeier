@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response, query } from "express";
 import { QueryConfig, QueryResult } from "pg";
 import { IMovie } from "./interfaces";
 import { client } from "./database";
@@ -26,7 +26,7 @@ const ensureIdExist = async (
   const queryResult: QueryResult<IMovie> = await client.query(queryConfig);
 
   if (queryResult.rowCount === 0) {
-    return res.status(404).json({ error: "Movie not Found" });
+    return res.status(404).json({ error: "Movie not found!" });
   }
 
   res.locals.movie = queryResult.rows[0];
@@ -66,4 +66,36 @@ const verifyNameExist = async (
   return next();
 };
 
-export { ensureIdExist, verifyNameExist };
+const verifyCategory = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { category } = req.query;
+
+  const queryTemplate: string = `
+  SELECT
+      *
+  FROM
+      movies
+  WHERE
+      category = $1;
+  `;
+
+  const queryConfig: QueryConfig = {
+    text: queryTemplate,
+    values: [category],
+  };
+
+  const queryResult: QueryResult = await client.query(queryConfig);
+
+  const foundMovies: IMovie[] = queryResult.rows;
+
+  if (foundMovies.length > 0) {
+    return res.json(foundMovies);
+  }
+
+  return next();
+};
+
+export { ensureIdExist, verifyNameExist, verifyCategory };
